@@ -4,7 +4,7 @@ import { EyeClosed } from "../icons/EyeClosed"
 import { EyeOpen } from "../icons/EyeOpenIcon"
 import { useNavigate } from 'react-router-dom'
 import axios from "axios";
-import { BACKEND_URL } from "../config"
+import { BACKEND_URL } from "../configure.js"
 import { Button } from "../components/Button"
 
 export const SignUp = () => {
