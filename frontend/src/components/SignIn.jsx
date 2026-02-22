@@ -1,39 +1,37 @@
 import { useRef, useState } from "react"
-import { Input } from "../components/Input"
-import { EyeClosed } from "../icons/EyeClosed"
-import { EyeOpen } from "../icons/EyeOpenIcon"
+import { Input } from "./Input.jsx"
+import { EyeClosed } from "../icons/EyeClosed.jsx"
+import { EyeOpen } from "../icons/EyeOpenIcon.jsx"
 import { useNavigate } from 'react-router-dom'
 import axios from "axios";
-import { BACKEND_URL } from "../configure.js"
-import { Button } from "../components/Button"
+import { Button } from "./Button.jsx"
 
-export const SignUp = () => {
 
+export const SignIn = () => {
     const [viewPass, setViewPass] = useState(false);
-
+    
     function handlePasswordViewer(){
         setViewPass(!viewPass)
     }
-
-    const usernameRef = useRef();
+    
     const emailRef = useRef();
     const passwordRef = useRef();
     const navigate = useNavigate();
-
-    async function signup(){
-        const username = usernameRef.current?.value;
+    
+    async function signin(){
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
         
         try {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-            await axios.post(`${BACKEND_URL}/user/signup`, {
-                username,
+            const response = await axios.post(`${backendUrl}/user/signin`, {
                 email,
                 password
             });
-            alert("Account Created Successfully");
-            navigate("/signin");
+            alert("You have signed In");
+            localStorage.setItem("token", response.data.token);
+            navigate("/dashboard");
         } catch(error){
             if(error.response) {
                 alert(error.response.data.message);
@@ -49,14 +47,13 @@ export const SignUp = () => {
 
                 <div className="flex flex-col gap-2 border rounded justify-center items-center">
                     <div className="p-4 flex flex-col gap-2 items-center">
-                        <Input reference={usernameRef} type={"text"} placeholder={"Username"} />
                         <Input reference={emailRef} type={"email"} placeholder={"Email"} />
                         <Input reference={passwordRef} type={viewPass === true ? "text" : "password"} placeholder={"Password"} />
                         
                         <div className="relative bottom-9 left-30 cursor-pointer" onClick={handlePasswordViewer}>
                             {viewPass === true ? <EyeClosed /> : <EyeOpen />}
                         </div>
-                        <Button text={"Sign Up"} onClick={signup} buttonStyles={"cursor-pointer hover:bg-green-400 transition-all font-semibold p-2 bg-green-200"} />
+                        <Button text={"Sign In"} onClick={signin} buttonStyles={"cursor-pointer hover:bg-green-400 transition-all font-semibold p-2 bg-green-200"} />
                     </div>
                 </div>
             </div>

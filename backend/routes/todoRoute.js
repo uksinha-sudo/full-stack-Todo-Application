@@ -11,13 +11,14 @@ todoRouter.post("/create", Middleware, async(req, res)=>{
     const completion = req.body.completion;
     try{
 
-        await todoModel.create({
+        const newTodo = await todoModel.create({
             task, completion, userId
         });
         res.json({
             message:"Todo Created",
-            userId
+            todo: newTodo
         });
+
     } catch(e){
         console.log(e);
         res.status(500).send({
@@ -56,7 +57,8 @@ todoRouter.delete("/delete", Middleware, async(req, res)=>{
             });
         } else {
             res.send({
-                message:"Deleted Todo"
+                message:"Deleted Todo",
+                deletedTodo: response
             })
         }
     } catch(e){
@@ -64,3 +66,25 @@ todoRouter.delete("/delete", Middleware, async(req, res)=>{
     }
 
 })
+
+todoRouter.put("/update", Middleware, async (req, res) => {
+    const { todoId, task } = req.body;
+    const userId = req.user.id;
+
+    try {
+        const updatedTodo = await todoModel.findOneAndUpdate(
+            { _id: todoId, userId },
+            { task },
+            { new: true }
+        );
+
+        if (!updatedTodo) {
+            return res.status(404).json({ message: "Todo not found" });
+        }
+
+        res.json({ message: "Todo updated", todo: updatedTodo });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
